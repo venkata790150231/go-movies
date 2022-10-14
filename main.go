@@ -27,6 +27,7 @@ var movies []Movie
 
 func getMovies(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	log.Printf("serving getMovies endpoint")
 	json.NewEncoder(w).Encode(movies)
 }
 
