@@ -1,25 +1,56 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pavan-go-movies
+  name: backend
 spec:
   selector:
     matchLabels:
-      app: go-movies
+      app: backend
   template:
     metadata:
       labels:
-        app: go-movies
-        author: pavan
+        app: backend
     spec:
       containers:
-      - name: go-movies 
-        image: edge31acr.azurecr.io/pavangomovies:41
+      - name: backend-go
+        image: edge31acr.azurecr.io/gomovies:42
         resources:
           limits:
-            memory: "20Mi"
+            memory: "64Mi"
             cpu: "100m"
-        ports:
-        - containerPort: 8000
       imagePullSecrets:
-        - name: edge31acr
+      - name: edge31acr
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-go
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: backend
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-fileupload
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-go
+            port:
+              number: 80
