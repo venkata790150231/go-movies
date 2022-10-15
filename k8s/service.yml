@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-movies-service
+spec:
+  selector:
+    app: go-movies
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
