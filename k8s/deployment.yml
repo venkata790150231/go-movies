@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: go-movies
 spec:
   selector:
     matchLabels:
-      app: backend
+      app: go-movies
   template:
     metadata:
       labels:
-        app: backend
+        app: go-movies
     spec:
       containers:
-      - name: backend-go
+      - name: go-movies-backend
         image: edge31acr.azurecr.io/gomovies:42
         resources:
           limits:
@@ -24,7 +24,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend-go
+  name: go-movies-service
 spec:
   type: ClusterIP
   ports:
@@ -32,13 +32,13 @@ spec:
     targetPort: 8000
     protocol: TCP
   selector:
-    app: backend
+    app: go-movies
 
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nginx-fileupload
+  name: nginx-go-movies
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
@@ -51,6 +51,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: backend-go
+            name: go-movies-service
             port:
               number: 80
